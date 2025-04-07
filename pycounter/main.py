@@ -1,12 +1,23 @@
+import os
 import sys
 from PyQt5.QtWidgets import QApplication
 
 from app import CounterApp
+from config import yaml_config_loader
 
 def main():
+
+    # Set up the application
+    # Load the configuration
+    if getattr(sys, 'frozen', False):
+        config_path = os.path.join(sys._MEIPASS, 'config.yaml')
+    else:
+        config_path = 'pycounter/config.yaml'
+    app_config = yaml_config_loader(config_path)
+
     app = QApplication(sys.argv)
 
-    window = CounterApp()
+    window = CounterApp(config=app_config)
     window.show()
     sys.exit(app.exec_())
 

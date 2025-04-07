@@ -7,3 +7,10 @@ __pycache__/
 *.egg-info/
 *.egg
 *.whl
+
+build/
+dist/
+
+.DS_Store
+
+*.spec

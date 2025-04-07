@@ -1,0 +1,19 @@
+window:
+  width: 450
+  height: 150
+
+notifications:
+  information:
+      hours: 7
+  warning:
+      hours: 8
+  critical:
+      hours: 9
+
+assets:
+  root: pycounter/assets/
+  icon: icon.svg
+  pause: pause.svg
+  play: play.svg
+  reset: reset.svg
+
