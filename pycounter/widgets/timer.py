@@ -31,7 +31,7 @@ class TimerWidget(BaseWidget):
 
         # tray icon
         self.tray_icon = QSystemTrayIcon(QIcon(str(self.config.assets.Icon)), self)
-        # self.tray_icon.setToolTip("PyCounter - Keep an eye on your time!")
+        self.tray_icon.setToolTip("PyCounter - Keep an eye on your time!")
         self.tray_icon.setVisible(True)
 
         self.init_ui()
