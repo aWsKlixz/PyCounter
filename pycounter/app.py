@@ -22,6 +22,8 @@ class CounterApp(QMainWindow, BaseWidget):
     updates tracked activity when the application closes.
     """
 
+    tracker_panel: ActivityPanel
+
     def __init__(self, config: AppConfig = AppConfig()):
         """
         Initialize the main application window.
@@ -60,11 +62,11 @@ class CounterApp(QMainWindow, BaseWidget):
         counter_frame = self._create_counter_frame()
 
         # Activity tracker panel
-        tracker_frame = ActivityPanel(self.config, central_widget)
+        self.tracker_panel = ActivityPanel(self.config, central_widget)
 
         # Add widgets to layout
         central_layout.addWidget(counter_frame)
-        central_layout.addWidget(tracker_frame)
+        central_layout.addWidget(self.tracker_panel)
 
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
@@ -140,4 +142,4 @@ class CounterApp(QMainWindow, BaseWidget):
         Ensures that the timer is paused and tracked time is pushed to storage.
         """
         self.play_pause_button.click()  # Ensure timer is paused/stopped
-        self.btn_push.click()           # Manually trigger push action
+        self.tracker_panel.btn_push.click()           # Manually trigger push action
