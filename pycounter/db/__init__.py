@@ -1,6 +1,8 @@
 import json
 import numpy as np
 import pandas as pd
+import tempfile
+import webbrowser
 from typing import Literal
 from datetime import timedelta, date, datetime
 from tinydb import TinyDB, Query
@@ -139,7 +141,9 @@ class Mind:
     def report(
             self, 
             format: Literal['hours', 'perc'] = 'hours',
-            interval: Literal['total', 'month'] = 'total'
+            interval: Literal['total', 'month'] = 'total',
+            file: str | None = None,
+            open_report: bool = False
         ):
         
         data = self.build_data(format=format)
@@ -150,7 +154,14 @@ class Mind:
                 column_date = datetime.strptime(col_name, '%d-%m-%Y')
                 return column_date.month == current_month
             data = data.loc[:, data.columns.to_series().apply(filter_columns_by_current_month)]
+        
+        # saving the file temporary
+        if file is None:
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+                file = tmp.name
+        data.to_excel(file)
 
-        data.to_excel('report.xlsx')
+        if open_report:
+            webbrowser.open(f'file://{file}')
 
 

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSystemTrayIcon, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QSystemTrayIcon, QPushButton, QMenu, QAction
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
 from datetime import datetime, timedelta
@@ -33,6 +33,25 @@ class TimerWidget(BaseWidget):
         self.tray_icon = QSystemTrayIcon(QIcon(str(self.config.assets.Icon)), self)
         self.tray_icon.setToolTip("PyCounter - Keep an eye on your time!")
         self.tray_icon.setVisible(True)
+
+        # the report menu
+        report_menu = QMenu("Reports", self)
+        total_report = QAction("Create total report!", self)
+        total_report.triggered.connect(self.on_create_total_report_click)
+
+        monthly_report = QAction("Create monthly report!", self)
+        monthly_report.triggered.connect(self.on_create_monthly_report_click)
+        
+        report_menu.addActions([total_report, monthly_report])
+        # the context menu
+        menu = QMenu(self)
+        quit_action = QAction('Exit!', self)
+        
+        menu.addMenu(report_menu)
+        menu.addSeparator()
+        menu.addAction(quit_action)
+
+        self.tray_icon.setContextMenu(menu)
 
         self.init_ui()
 
@@ -101,3 +120,21 @@ class TimerWidget(BaseWidget):
 
     def show_alert(self, message: str, icon: QSystemTrayIcon = QSystemTrayIcon.Information):
         self.tray_icon.showMessage("Alert", message, icon, 10000)
+    
+    def on_create_total_report_click(self):
+        
+        self.mind.report(
+            format='hours',
+            interval='total',
+            open_report=True
+        )
+
+    def on_create_monthly_report_click(self):
+        self.mind.report(
+            format='hours',
+            interval='month',
+            open_report=True
+        )
+
+    def on_exit_click(self):
+        QApplication.instance().quit()

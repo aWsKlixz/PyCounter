@@ -70,6 +70,7 @@ class Data(BaseSettings):
     database: str = 'test'
     collection: str =  'herecomestheuser'
     defaultorder: str = "1234"
+    tempfolder: str = '.'
     
 
 

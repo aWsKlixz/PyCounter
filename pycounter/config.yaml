@@ -24,4 +24,5 @@ mind:
   database: 'test'
   collection: 'herecomestheuser'
   defaultorder: "1234"
+  tempfolder: '.'
 
