@@ -16,6 +16,7 @@
 - PyQt5
 - Pydantic
 - YAML
+- TinyDB
 
 You can install the required packages using `pip`:
 

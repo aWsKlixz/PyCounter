@@ -1,6 +1,6 @@
 window:
   width: 450
-  height: 150
+  height: 200
 
 notifications:
   information:
@@ -16,4 +16,12 @@ assets:
   pause: pause.svg
   play: play.svg
   reset: reset.svg
+  quit: quit.svg
+  push: push.svg
+  stylesheet: style.qss
+
+mind:
+  database: 'test'
+  collection: 'herecomestheuser'
+  defaultorder: "1234"
 

@@ -6,7 +6,7 @@ from pathlib import Path
 
 class WindowConfig(BaseSettings):
     width: int = 450
-    height: int = 150
+    height: int = 200
 
 class NotificationConfig(BaseSettings):
     information: Dict[str, int] = {
@@ -31,31 +31,53 @@ class AssetConfig(BaseSettings):
             r = Path(self.root)
         return r
     
-    icon: str = "icon.png"
+    icon: str = "icon.svg"
     @property
     def Icon(self) -> str:
         return self.Root.joinpath(self.icon)
     
     play: str = "play.svg"
     @property
-    def Play(self) -> str:
+    def Play(self) -> Path:
         return self.Root.joinpath(self.play)
     
     pause: str = "pause.svg"
     @property
-    def Pause(self) -> str:
+    def Pause(self) -> Path:
         return self.Root.joinpath(self.pause)
     
     reset: str = "reset.svg"
     @property
-    def Reset(self) -> str:
+    def Reset(self) -> Path:
         return self.Root.joinpath(self.reset)
+    
+    push: str = "push.svg"
+    @property
+    def Push(self) -> Path:
+        return self.Root.joinpath(self.push)
+    
+    quit: str = "quit.svg"
+    @property
+    def Quit(self):
+        return self.Root.joinpath(self.quit)
+    
+    stylesheet: str = "style.qss"
+    @property
+    def Stylesheet(self):
+        return self.Root.joinpath(self.stylesheet)
+
+class Data(BaseSettings):
+    database: str = 'test'
+    collection: str =  'herecomestheuser'
+    defaultorder: str = "1234"
+    
 
 
 class AppConfig(BaseSettings):
     window: WindowConfig = WindowConfig()
     notifications: NotificationConfig = NotificationConfig()
     assets: AssetConfig = AssetConfig()
+    mind: Data = Data()
 
 
 def yaml_config_loader(file_path: str) -> AppConfig:

@@ -3,8 +3,8 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 
-from app import CounterApp
-from config import yaml_config_loader
+from pycounter.app import CounterApp
+from pycounter.config import yaml_config_loader
 
 def main():
 
@@ -17,7 +17,8 @@ def main():
     app_config = yaml_config_loader(config_path)
 
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(str(app_config.assets.icon)))
+    app.setWindowIcon(QIcon(str(app_config.assets.Icon)))
+    app.setStyleSheet(app_config.assets.Stylesheet.open('r').read())
 
     window = CounterApp(config=app_config)
     window.show()

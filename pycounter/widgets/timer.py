@@ -3,8 +3,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
 from datetime import datetime, timedelta
 
-from widgets.basewidget import BaseWidget
-from config import AppConfig
+from pycounter.widgets.basewidget import BaseWidget
+from pycounter.config import AppConfig
 
 class TimerWidget(BaseWidget):
 
@@ -14,13 +14,13 @@ class TimerWidget(BaseWidget):
 
     def __init__(self, config: AppConfig, parent=None):
         super().__init__(config=config, parent=parent)
-
+        
         self.information_shown = False
         self.warning_shown = False
         self.critical_shown = False
 
         self.lbl_time = QLabel("00:00:00", self)
-        self.lbl_time.setStyleSheet("font-size: 24px;")
+        # self.lbl_time.setStyleSheet("font-size: 24px;")
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
@@ -58,9 +58,12 @@ class TimerWidget(BaseWidget):
             self.start_time = None
             button.setIcon(QIcon(str(self.config.assets.Play)))
             button.setText("Resume")
+            # update the elapsed time in db for the day
+            self.mind.update(self.elapsed)
+
         else:
             # Resume the timer
-            self.start_time = datetime.now() - self.elapsed
+            self.start_time = datetime.now() # - self.elapsed
             self.timer.start(1000)
             button.setIcon(QIcon(str(self.config.assets.Pause)))
             button.setText("Pause")
@@ -77,6 +80,8 @@ class TimerWidget(BaseWidget):
         self.information_shown = False
         self.warning_shown = False
         self.critical_shown = False
+
+        self.mind.update(timedelta(seconds=0.0))
 
     def check_for_alerts(self):
         if self.elapsed >= timedelta(**self.config.notifications.information) and self.information_shown == False:

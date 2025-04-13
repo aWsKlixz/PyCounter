@@ -1,0 +1,17 @@
+QPushButton {
+    font-family: "Note Sans";
+    font-size: 18pt;
+    min-height: 60px;
+
+}
+
+QLineEdit {
+    font-family: "Note Sans";
+    font-size: 18pt;
+    min-height: 60px
+}
+
+QLabel {
+    font-family: "Note Sans";
+    font-size: 24pt;
+}
