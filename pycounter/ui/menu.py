@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMenu, QApplication, QAction
 
-from pycounter.widgets.basewidget import BaseWidget
+from ui.basewidget import BaseWidget
 
 
 class AppMenu(QMenu):
@@ -23,7 +23,7 @@ class AppMenu(QMenu):
                                  giving access to the shared 'mind' logic.
         """
         self.parent_base_widget = parent
-        super().__init__(parent)
+        super().__init__()
 
         self.init_ui()
 

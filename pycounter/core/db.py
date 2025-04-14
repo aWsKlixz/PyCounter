@@ -10,7 +10,7 @@ from tinydb.storages import JSONStorage
 from tinydb_serialization import SerializationMiddleware
 from tinydb_serialization.serializers import DateTimeSerializer
 
-from pycounter.config import AppConfig
+from config import AppConfig
 
 
 class PrettyJSONStorage(JSONStorage):
@@ -57,7 +57,7 @@ class Mind:
         serialization.register_serializer(DateTimeSerializer(), 'TinyDate')
 
         # Initialize TinyDB and the specific table for storing daily data
-        self.db = TinyDB(self.config.mind.database + '.json', indent=2)
+        self.db = TinyDB(self.config.mind.Database, indent=2)
         self.collection = self.db.table(self.config.mind.collection)
         self.day_activity = Query()
 

@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 from pycounter.config import yaml_config_loader
-from pycounter.db import Mind
+from pycounter.core.db import Mind
 import pandas as pd
 
 class TestPyCounter(unittest.TestCase):

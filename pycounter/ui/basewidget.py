@@ -1,11 +1,12 @@
-from abc import ABC
 from typing import Literal
 from PyQt5.QtWidgets import QWidget, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 
-from pycounter.config import AppConfig
-from pycounter.db import Mind
+from config import AppConfig
+
+from core.db import Mind
+from core.activitymanager import ActivityManager
 
 class BaseWidget(QWidget):
     """
@@ -19,8 +20,15 @@ class BaseWidget(QWidget):
 
     config: AppConfig  # Application configuration, including paths and visual assets
     mind: Mind         # Shared logic/state object (e.g. handles timing, data pushing)
+    activity_manager: ActivityManager
 
-    def __init__(self, config: AppConfig, parent=None):
+    def __init__(
+            self, 
+            config: AppConfig,
+            mind: Mind,
+            activity_manager: ActivityManager,
+            parent=None
+        ):
         """
         Initializes the base widget with shared configuration and state.
 
@@ -29,7 +37,8 @@ class BaseWidget(QWidget):
             parent: Optional parent QWidget.
         """
         self.config = config
-        self.mind = Mind(config=self.config)  # Instantiate shared data/state logic
+        self.mind = mind
+        self.activity_manager = activity_manager
         super().__init__(parent)
 
     def _set_icon(
@@ -52,4 +61,4 @@ class BaseWidget(QWidget):
 
         if icon_path:
             button.setIcon(QIcon(str(icon_path)))      # Set the icon image
-            button.setIconSize(QSize(32, 32))          # Set a standard size for consistency
+            button.setIconSize(QSize(28, 28))          # Set a standard size for consistency

@@ -3,9 +3,11 @@ from typing import Optional
 
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QHBoxLayout
 
-from pycounter.widgets.basewidget import BaseWidget
-from pycounter.db import Mind
+from config import AppConfig
+from ui.basewidget import BaseWidget
 
+from core.db import Mind
+from core.activitymanager import ActivityManager
 
 class ActivityPanel(BaseWidget):
     """
@@ -26,7 +28,12 @@ class ActivityPanel(BaseWidget):
     btn_pull: QPushButton
     mind: Mind
 
-    def __init__(self, config, parent: Optional[BaseWidget] = None):
+    def __init__(
+            self, 
+            config: AppConfig, 
+            mind: Mind,
+            mgr: ActivityManager,
+            parent: Optional[BaseWidget] = None):
         """
         Initializes the activity panel with configuration and parent widget.
 
@@ -34,7 +41,7 @@ class ActivityPanel(BaseWidget):
             config: Configuration object loaded from the app.
             parent (Optional[BaseWidget]): Parent widget.
         """
-        super().__init__(config, parent)
+        super().__init__(config=config, mind=mind, activity_manager=mgr, parent=parent)
         self.init_ui()
 
     def init_ui(self):
@@ -45,11 +52,11 @@ class ActivityPanel(BaseWidget):
 
         self.inp_project = QLineEdit(self)
 
-        self.btn_push = QPushButton("Push", self)
+        self.btn_push = QPushButton("Record", self)
         self._set_icon(self.btn_push, 'Push')
         self.btn_push.clicked.connect(self._btn_push_click_handler)
 
-        self.btn_pull = QPushButton("Pull", self)
+        self.btn_pull = QPushButton("Push", self)
         self._set_icon(self.btn_pull, 'Quit')  # Consider changing 'Quit' to 'Pull' icon in assets
         self.btn_pull.clicked.connect(self._btn_pull_click_handler)
 

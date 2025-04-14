@@ -1,3 +1,4 @@
+debug: true
 window:
   width: 450
   height: 200
@@ -25,4 +26,5 @@ mind:
   collection: 'herecomestheuser'
   defaultorder: "1234"
   tempfolder: '.'
+
 

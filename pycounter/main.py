@@ -3,8 +3,8 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 
-from pycounter.app import CounterApp
-from pycounter.config import yaml_config_loader
+from ui.app import CounterApp
+from config import yaml_config_loader
 
 def main():
     """
