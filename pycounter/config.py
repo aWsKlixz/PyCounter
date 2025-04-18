@@ -99,7 +99,6 @@ class Data(BaseSettings):
 
     collection: str = 'herecomestheuser'  # Default collection/table name
     defaultorder: str = "1234"  # Default order ID (useful for debugging or pre-loads)
-    tempfolder: str = '.'  # Directory for storing temporary data/files
 
 
 class AppConfig(BaseSettings):

@@ -30,7 +30,60 @@ Ensure you have the following installed:
 - numpy
 - Pandas
 - openpyxl
+- pyinstaller
 
 To install the required packages, run:
 ```bash
 pip install -r requirements.txt
+```
+
+## **Configuring**
+PyCounter is easy to configure and customize for your workflow. It uses a `YAML`-based configuration system powered by Pydantic for validation and flexibility.
+
+### Default Configuration
+
+By default, PyCounter sets up everything you need to get started:
+- Window size and layout
+- Notification time levels (info/warning/critical)
+- Asset paths (icons, stylesheets)
+- Local JSON database for project data
+
+When running in **debug mode**, configurations are stored in the source directory.  
+In production, PyCounter automatically creates and uses a dedicated folder at `~/.pycounter`.
+
+### Config File (YAML)
+
+You can override the default settings by providing a custom YAML configuration file.  
+Here's an example:
+
+```yaml
+debug: false
+
+window:
+  width: 600
+  height: 300
+
+notifications:
+  information:
+    hours: 1
+  warning:
+    hours: 2
+  critical:
+    hours: 4
+
+mind:
+  database: "my_tracking_db"
+  collection: "user"
+  defaultorder: "0000"
+```
+
+## **Installing**
+
+To turn PyCounter into a standalone executable
+```bash
+pyinstaller --onefile --noconsole --add-data "pycounter/assets/*:pycounter/assets" --add-data "pycounter/config.yaml:." pycounter/main.py
+
+```
+
+## **Testing** 
+You can test PyCounter by running the script at ```tests/fake_db.py``` to create a fake database.
