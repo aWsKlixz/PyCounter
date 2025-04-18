@@ -3,96 +3,131 @@ from datetime import timedelta, datetime
 from config import AppConfig
 
 class ActivityManager(QObject):
-    
+    """
+    A class to manage the activity timer and alert system.
+
+    This class tracks the elapsed time for an activity, manages a timer that updates every second,
+    and provides alerts when the elapsed time exceeds certain thresholds.
+    """
+
     config: AppConfig
 
-    # information
+    # Flags to track the state of each alert (information, warning, critical)
     information_shown = False
     warning_shown = False
     critical_shown = False
 
+    # Timer instance and elapsed time tracking
     timer: QTimer
     start_time: datetime = datetime.now()
     total_elapsed: timedelta = timedelta(seconds=0)
     running: bool = False
 
+    # Signal emitted on every timer tick to update elapsed time
     tick: pyqtSignal = pyqtSignal()
 
     def __init__(self, config: AppConfig, parent: QObject):
-        
+        """
+        Initialize the ActivityManager instance.
+
+        Args:
+            config (AppConfig): The application configuration that contains notification thresholds.
+            parent (QObject): The parent object for the timer.
+        """
         super().__init__()
 
         self.config = config
 
+        # Initialize alert flags
         self.information_shown = False
         self.warning_shown = False
         self.critical_shown = False
 
+        # Initialize elapsed time tracking
         self.total_elapsed = timedelta(seconds=0)
         self.start_time = datetime.now()
 
+        # Initialize and configure the timer
         self.timer = QTimer(parent)
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.tick.emit)
-        self.tick.connect(self.update_time)
+        self.timer.setInterval(1000)  # 1000 ms = 1 second
+        self.timer.timeout.connect(self.tick.emit)  # Emit signal every time the timer times out
+        self.tick.connect(self.update_time)  # Connect the tick signal to the update_time method
 
         self.running = False
 
     def update_time(self):
+        """
+        Update the total elapsed time by calculating the difference
+        between the current time and the start time.
+        """
         now = datetime.now()
         self.total_elapsed = now - self.start_time
     
+    def start_timer(self):
+        """
+        Start the timer if it is not already running.
+        Resets the start time and begins updating the elapsed time every second.
+        """
+        if not self.running:
+            self.start_time = datetime.now() - self.total_elapsed  # Adjust the start time based on any previous elapsed time
+            self.timer.start(1000)  # Start the timer with 1-second interval
+            self.running = True
+    
     def toggle_play_pause(self):
         """
-        Start or pause the timer depending on its current state.
+        Toggle the timer between playing and pausing states.
 
-        Args:
-            button (QPushButton): The button triggering the toggle.
+        When paused, it stops the timer and keeps track of the elapsed time.
+        When resumed, it restarts the timer from the paused state.
         """
         if self.running:
             # Pause the timer
             self.timer.stop()
-            self.total_elapsed = datetime.now() - self.start_time
+            self.total_elapsed = datetime.now() - self.start_time  # Store the elapsed time at pause
             self.start_time = None
-
+            self.running = not self.running
         else:
             # Resume the timer
-            self.start_time = datetime.now() - self.total_elapsed
-            self.timer.start(1000)
-
-        self.running = not self.running
+            self.start_timer()
     
     def reset(self):
         """
-        Reset the timer to 0 and clear all states.
+        Reset the timer and clear all states to their initial values.
 
-        Args:
-            button (QPushButton): The button triggering the reset.
+        Stops the timer, resets the elapsed time, and clears all alert flags.
         """
         self.timer.stop()
         self.start_time = None
         self.total_elapsed = timedelta()
-        
+
         self.running = False
-        # Reset all alert states
+        # Reset all alert flags
         self.information_shown = False
         self.warning_shown = False
         self.critical_shown = False
 
     def check_for_alerts(self):
         """
-        Show desktop notifications based on elapsed time
-        and configured alert thresholds.
+        Check if the elapsed time has reached any configured alert thresholds.
+
+        Returns:
+            tuple: A tuple containing the alert message and the alert type
+                   (information, warning, or critical) if an alert should be shown.
+                   None if no alert is triggered.
         """
+        # Check if elapsed time has exceeded the information threshold
         if self.total_elapsed >= timedelta(**self.config.notifications.information) and not self.information_shown:
-           self.information_shown = True
-           return ("Finish now!", 'Information')
-            
+            self.information_shown = True
+            return ("Finish now!", 'Information')
+
+        # Check if elapsed time has exceeded the warning threshold
         if self.total_elapsed >= timedelta(**self.config.notifications.warning) and not self.warning_shown:
             self.warning_shown = True
             return ("Tomorrow is a new day!", 'Warning')
-            
+
+        # Check if elapsed time has exceeded the critical threshold
         if self.total_elapsed >= timedelta(**self.config.notifications.critical) and not self.critical_shown:
             self.critical_shown = True
             return ("GO HOME NOW!", 'Critical')
-            
+
+        return None  # No alert if none of the thresholds are exceeded

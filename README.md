@@ -1,21 +1,28 @@
-# PyCounter - A Simple Timer and Counter Application
+# **PyCounter - Keep an Eye on Your Time, Boost Your Productivity!**
 
-**PyCounter** is a Python-based timer and counter application that runs in the background and helps you manage your time effectively. It provides a system tray icon, notifications for different time thresholds, and the ability to pause, resume, and reset your timer. In addition, you can push current order-/project-numbers to the counter to track your work on it.
-To get an overview of your working hours, you can create an excel view in total or by month.
+**PyCounter** is your go-to Python-based time and activity tracker designed to help you stay on top of your workday. Whether you’re working on a project, managing tasks, or simply want to keep track of your hours, PyCounter makes it easy and efficient.
 
-## Features
+With its simple interface and essential features, PyCounter is the perfect tool for freelancers, professionals, and anyone looking to optimize their time management. Keep track of your progress, set custom alerts, and gain insights into your productivity — all while enjoying a smooth and seamless experience.
 
-- **System Tray Integration**: Runs as a background application with a system tray icon.
-- **Start, Pause, and Reset Timer**: Control the timer using buttons to start, pause, or reset.
-- **Timer Alerts**: Show notifications based on elapsed time with different levels of urgency (Information, Warning, Critical).
-- **Configurable Alerts**: Set custom time thresholds for each type of alert (information, warning, critical).
-- **Responsive UI**: Display the elapsed time in a clear and easy-to-read format.
-- **Project Tracking**: Track your project activity.
-- **Work Overview**: Get an overview of your work in total or by month
+## **Why Choose PyCounter?**
+- **Stay in Control of Your Time**: Start, pause, and reset the timer with just a click.
+- **Customizable Alerts**: Get notified when you reach key time milestones with information, warning, and critical alerts. Tailor the alerts to fit your needs.
+- **Simple, Clear, and Responsive UI**: Track your time easily with a clean and user-friendly interface that adapts to your workflow.
+- **Monitor Project Progress**: Keep a close eye on your ongoing projects and understand where your time is spent.
+- **Insightful Work Overview**: Review your work in total or by month, helping you make informed decisions about your time usage.
+- **Seamless System Tray Integration**: Let PyCounter run quietly in the background, available whenever you need it without interrupting your work.
 
-## Requirements
+## **Key Features**
+- **Start, Pause, and Reset Timer**: Convenient controls to manage your time with ease.
+- **Timer Alerts with Different Urgency Levels**: Information, warning, and critical alerts based on your configurable time thresholds.
+- **Configurable Alert Thresholds**: Adjust the time at which alerts trigger to suit your workflow and preferences.
+- **Track Project Activity**: Keep tabs on how much time you’re spending on each project.
+- **Work Summary**: View detailed breakdowns of your work over time, by day or by month.
+- **Background Mode**: Minimize to the system tray and continue tracking without distractions.
 
-- Python >=3.11
+## **Requirements**
+Ensure you have the following installed:
+- Python >= 3.11
 - PyQt5
 - Pydantic
 - YAML
@@ -24,19 +31,6 @@ To get an overview of your working hours, you can create an excel view in total 
 - Pandas
 - openpyxl
 
-You can install the required packages using `pip`:
-
+To install the required packages, run:
 ```bash
-pip install requirements.txt -r
-```
-
-## Install with pyinstaller
-
-```bash
-pyinstaller --onefile --add-data "pycounter/assets/*:pycounter/assets" --add-data "pycounter/config.yaml:." pycounter/main.py
-```
-
-
-## Testing
-To test the app, you can create a fake-database by excuting the script at tests/fake_db.py
-
+pip install -r requirements.txt

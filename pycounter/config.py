@@ -74,10 +74,10 @@ class AssetConfig(BaseSettings):
     def Push(self) -> Path:
         return self.Root.joinpath(self.push)
 
-    quit: str = "quit.svg"
+    record: str = 'record.svg'
     @property
-    def Quit(self) -> Path:
-        return self.Root.joinpath(self.quit)
+    def Record(self) -> Path:
+        return self.Root.joinpath(self.record)
 
     stylesheet: str = "style.qss"
     @property

@@ -44,7 +44,7 @@ class BaseWidget(QWidget):
     def _set_icon(
         self,
         button: QPushButton,
-        icon: Literal['Icon', 'Pause', 'Play', 'Reset', 'Quit', 'Push']
+        icon: Literal['Icon', 'Pause', 'Play', 'Reset', 'Record', 'Push']
     ):
         """
         Applies a standardized icon from the assets to a QPushButton.

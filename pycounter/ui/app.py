@@ -122,4 +122,4 @@ class CounterApp(QMainWindow):
         Ensures that the timer is paused and tracked time is pushed to storage.
         """
         self.timer_panel.btn_reset.click()      # Ensure timer is paused/stopped
-        self.tracker_panel.btn_push.click()     # Manually trigger push action
+        self.tracker_panel.btn_activity_handler.click()     # Manually trigger push action

@@ -13,17 +13,6 @@ from tinydb_serialization.serializers import DateTimeSerializer
 from config import AppConfig
 
 
-class PrettyJSONStorage(JSONStorage):
-    """
-    Custom TinyDB storage that pretty-prints JSON files with indentation.
-    Useful for easier manual reading and debugging.
-    """
-    def _write(self, data):
-        self._handle.seek(0)
-        self._handle.write(json.dumps(data, indent=2))
-        self._handle.truncate()
-
-
 class Mind:
     """
     A class to track daily activities and order-specific work durations.
@@ -33,14 +22,17 @@ class Mind:
     """
 
     config: AppConfig
-    day_format: str = '%Y%m%d'
-    current_order: str = ""
-    order_start_time: datetime = datetime.now()
+    day_format: str = '%Y%m%d'  # Format for storing the day as YYYYMMDD
+    current_order: str = ""  # Tracks the current active order
+    order_start_time: datetime = datetime.now()  # The timestamp when the current order starts
 
     @property
     def day_id(self) -> str:
         """
         Returns the current date formatted as a string (default: YYYYMMDD).
+
+        Returns:
+            str: The current date as a string in the format YYYYMMDD.
         """
         return date.today().strftime(self.day_format)
 
@@ -53,13 +45,29 @@ class Mind:
             config (AppConfig): Application configuration with DB details.
         """
         self.config = config
+        # Setup serialization middleware for TinyDB to handle datetime serialization
         serialization = SerializationMiddleware()
         serialization.register_serializer(DateTimeSerializer(), 'TinyDate')
 
-        # Initialize TinyDB and the specific table for storing daily data
+        # Initialize TinyDB with the specified database and collection
         self.db = TinyDB(self.config.mind.Database, indent=2)
         self.collection = self.db.table(self.config.mind.collection)
-        self.day_activity = Query()
+        self.day_activity = Query()  # For querying activities by day
+
+    def get_activity_suggestions(self):
+        """
+        Retrieves all unique activity names (orders) from the stored database.
+
+        Returns:
+            set: A set containing all unique activity (order) names from the stored data.
+        """
+        all_activities = set()
+        docs = self.collection.all()
+        # Collect all activity names from the stored documents
+        for doc in docs:
+            day_activities = doc.get('orders', {})
+            all_activities.update(day_activities.keys())
+        return all_activities
 
     def get_current_activity(self) -> dict | None:
         """
@@ -93,11 +101,13 @@ class Mind:
         day_activity = self.get_current_activity()
 
         if day_activity:
+            # Update the elapsed time in the current day's record
             self.collection.update(
                 lambda a: a.update({'elapsed': transformed_elapsed}),
                 self.day_activity.day == self.day_id
             )
         else:
+            # Insert a new record for the current day with the elapsed time
             self.collection.insert({
                 'day': self.day_id,
                 'elapsed': transformed_elapsed
@@ -106,6 +116,9 @@ class Mind:
     def push(self):
         """
         Push the current order's duration to the activity record.
+
+        This method updates the time spent on the current order and stores it
+        in the database under the 'orders' field.
         """
         activity = self.get_current_activity()
 
@@ -133,8 +146,8 @@ class Mind:
         Returns:
             pd.DataFrame: A table where columns are dates and rows are order names and total elapsed.
         """
-        columns = set()
-        rows = set()
+        columns = set()  # Stores all unique day IDs
+        rows = set()     # Stores all unique order names
 
         # Collect all day IDs and all unique order names
         for doc in self.collection.all():
@@ -153,53 +166,4 @@ class Mind:
         for doc in self.collection.all():
             if (day := doc.get('day')):
                 col_idx = columns.index(day)
-                total_elapsed = doc.get('elapsed', 0.0) / 3600  # in hours
-                data[-1, col_idx] = round(total_elapsed, 1)
-
-                orders = doc.get('orders', {})
-                for order, seconds in orders.items():
-                    row_idx = rows.index(order)
-                    value = seconds / 3600
-                    if format == 'perc' and total_elapsed > 0:
-                        value = (value / total_elapsed) * 100
-                    data[row_idx, col_idx] = round(value, 1)
-
-        formatted_columns = [
-            datetime.strptime(col, self.day_format).strftime('%d-%m-%Y')
-            for col in columns
-        ]
-
-        return pd.DataFrame(data=data, columns=formatted_columns, index=rows)
-
-    def report(
-        self,
-        format: Literal['hours', 'perc'] = 'hours',
-        interval: Literal['total', 'month'] = 'total',
-        file: str | None = None,
-        open_report: bool = False
-    ):
-        """
-        Generates an Excel report of recorded time usage.
-
-        Args:
-            format (str): 'hours' for time in hours or 'perc' for percentage view.
-            interval (str): 'total' for all-time or 'month' for current month only.
-            file (str, optional): Output file path. Temporary if None.
-            open_report (bool): If True, opens the Excel file after creation.
-        """
-        data = self.build_data(format=format)
-
-        if interval == 'month':
-            current_month = datetime.now().month
-            data = data.loc[:, data.columns.to_series().apply(
-                lambda d: datetime.strptime(d, '%d-%m-%Y').month == current_month
-            )]
-
-        if file is None:
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
-                file = tmp.name
-
-        data.to_excel(file)
-
-        if open_report:
-            webbrowser.open(f'file://{file}')
+                total_elapsed = doc.get_

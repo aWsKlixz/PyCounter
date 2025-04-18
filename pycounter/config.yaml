@@ -17,7 +17,7 @@ assets:
   pause: pause.svg
   play: play.svg
   reset: reset.svg
-  quit: quit.svg
+  record: record.svg
   push: push.svg
   stylesheet: style.qss
 
