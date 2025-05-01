@@ -1,7 +1,8 @@
 import sys
 import yaml
+import getpass
 from pydantic_settings import BaseSettings
-from typing import Dict
+from typing import Dict, Optional
 from pathlib import Path
 
 class WindowConfig(BaseSettings):
@@ -97,7 +98,7 @@ class Data(BaseSettings):
     def Database(self, val: str):
         self.database = val
 
-    collection: str = 'herecomestheuser'  # Default collection/table name
+    collection: Optional[str] = 'herecomestheuser'  # Default collection/table name
     defaultorder: str = "1234"  # Default order ID (useful for debugging or pre-loads)
 
 
@@ -129,6 +130,9 @@ class AppConfig(BaseSettings):
         self.AppDir.mkdir(mode=0o777, parents=False, exist_ok=True)
         # set the mind database config depending on the app dir
         self.mind.Database = str(self.AppDir.joinpath(self.mind.database).with_suffix('.json'))
+        # set the mind collection name
+        if not self.debug:
+            self.mind.collection = getpass.getuser()
 
 
 def yaml_config_loader(file_path: str) -> AppConfig:

@@ -82,3 +82,4 @@ class AppMenu(QMenu):
         Callback for the 'Exit' action. Closes the entire application.
         """
         QApplication.instance().quit()
+ 

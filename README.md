@@ -49,7 +49,8 @@ By default, PyCounter sets up everything you need to get started:
 - Local JSON database for project data
 
 When running in **debug mode**, configurations are stored in the source directory.  
-In production, PyCounter automatically creates and uses a dedicated folder at `~/.pycounter`.
+In production, PyCounter automatically creates and uses a dedicated folder at `~/.pycounter` and the collection corresponds to the current user. The `defaultorder`-key
+can be imagined like a general cost center.
 
 ### Config File (YAML)
 

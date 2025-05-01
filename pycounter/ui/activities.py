@@ -68,8 +68,6 @@ class FocusLineEdit(QLineEdit):
         Ensure the completer updates on focus-in event.
         """
         super().focusInEvent(event)
-        # Optionally show suggestions immediately on focus:
-        self.completer().complete()
 
 
 class ActivityPanel(BaseWidget):
@@ -117,6 +115,7 @@ class ActivityPanel(BaseWidget):
         Set up and layout the UI components horizontally.
         """
         self.lbl_project = QLabel("Project", self)
+        self.lbl_project.setObjectName("lbl_project")
 
         # Get previous activity suggestions from database
         suggestions = self.mind.get_activity_suggestions()
@@ -144,6 +143,7 @@ class ActivityPanel(BaseWidget):
             self.inp_project.setText('')
             self.btn_activity_handler.setText('Record')
             self._set_icon(self.btn_activity_handler, 'Record')
+            self.inp_project.setEnabled(True)
         else:
             # Start recording: validate input, start timer, update shared state
             project_name = self.inp_project.text().strip()
@@ -158,6 +158,8 @@ class ActivityPanel(BaseWidget):
             self.mind.order_start_time = datetime.now()
             self.btn_activity_handler.setText("Push")
             self._set_icon(self.btn_activity_handler, 'Push')
+
+            self.inp_project.setDisabled(True)
 
         # Toggle recording state
         self.is_recording = not self.is_recording

@@ -69,6 +69,8 @@ class TimerPanel(BaseWidget):
 
         # Initialize and configure the timer label
         self.lbl_time = QLabel("0:00:00", self)
+        # update the label with the current elapsed time from the activity manager
+        self.update_label_handler()
         # Connect the tick signal to update the timer display
         self.activity_manager.tick.connect(self.update_label_handler)
 

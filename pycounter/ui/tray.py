@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QSystemTrayIcon
+from PyQt5.QtWidgets import QSystemTrayIcon, QApplication
 from PyQt5.QtGui import QIcon
 
 from ui.menu import AppMenu
@@ -38,3 +38,15 @@ class TrayCounter(QSystemTrayIcon):
             icon (QSystemTrayIcon.MessageIcon): The type of notification icon.
         """
         self.showMessage("Alert", message, icon, 10000)
+
+
+    def on_activate_trigger(self, reason: str):
+        """
+        Handle the activation of the tray icon.
+
+        Args:
+            reason (str): The reason for the activation.
+        """
+        if reason == QSystemTrayIcon.Trigger:
+            # Show the main window when the tray icon is clicked
+            self.parent().show()

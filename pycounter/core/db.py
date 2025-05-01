@@ -153,7 +153,7 @@ class Mind:
         for doc in self.collection.all():
             if (day := doc.get('day')):
                 columns.add(day)
-                if isinstance((orders := doc.get('orders')), dict):
+                if isinstance((orders := doc.get('orders', None)), dict):
                     rows.update(orders.keys())
 
         rows = list(rows)
@@ -163,7 +163,68 @@ class Mind:
         data = np.zeros((len(rows), len(columns)))
 
         # Populate the matrix with hours or percentages
-        for doc in self.collection.all():
-            if (day := doc.get('day')):
-                col_idx = columns.index(day)
-                total_elapsed = doc.get_
+        for document in self.collection.all():
+             day_id = document.get('day', None)
+             if day_id:
+                 col_idx = columns.index(day_id)
+ 
+                 total_elapsed = document.get('elapsed', 0.0) / (60 * 60)# convert to hours
+ 
+                 data[-1, col_idx] = round(total_elapsed, 1)
+ 
+                 orders = document.get('orders', {})
+                 if isinstance(orders, dict):
+                     for order, order_elapsed in orders.items():
+                         row_idx = rows.index(order)
+                         formatted_order_elapsed = order_elapsed / (60 * 60)
+                         if format == 'perc':
+                             formatted_order_elapsed = (formatted_order_elapsed / total_elapsed) * 1e2 
+                         data[row_idx, col_idx] = round(formatted_order_elapsed, 1)
+ 
+        # format columns for printing
+        formatted_columns = [datetime.strptime(col, self.day_format).strftime('%d-%m-%Y') for col in columns]
+         
+        data = pd.DataFrame(
+             data=data, columns=formatted_columns, index=rows
+        )
+ 
+        return data
+    
+    def report(
+            self,
+            format: Literal['hours', 'perc'] = 'hours',
+            interval: Literal['total', 'month'] = 'total',
+            file: str | None = None,
+            open_report: bool = True
+    ):
+        """
+        Generates a report of the activities stored in the database.
+
+        Args:
+            format (str): Either 'hours' to show hours worked or 'perc' to show % per order.
+            interval (str): Either 'total' for all time or 'month' for the current month.
+            open_report (bool): If True, opens the report in a web browser.
+        """
+        data = self.build_data(format=format)
+        
+        if interval == 'month':
+            # Filter the DataFrame to only include the current month
+            current_month = datetime.now().month
+            def filter_columns_by_current_month(column_name):
+                column_date = datetime.strptime(column_name, '%d-%m-%Y')
+                return column_date.month == current_month
+            data = data.loc[:, data.columns.to_series().apply(filter_columns_by_current_month)]
+
+        if file is None:
+            # Create a temporary file to store the report
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
+                file = tmp_file.name
+        
+        # rearange the columns to be in the order of the day
+        data = data[sorted(data.columns, key=lambda day: pd.to_datetime(day, format='%d-%m-%Y'))]
+        # Save the DataFrame to an Excel file
+        data.to_excel(file)
+
+        if open_report:
+            # Open the report in the default web browser
+            webbrowser.open(f'file://{file}')

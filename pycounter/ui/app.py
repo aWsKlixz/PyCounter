@@ -51,6 +51,7 @@ class CounterApp(QMainWindow):
         self.config = config
         self.mind = Mind(self.config)
         self.activity_manager = ActivityManager(self.config, self)
+        self.activity_manager.total_elapsed = self.mind.get_current_elapsed_time()
 
         self.setWindowIcon(QIcon(str(self.config.assets.Icon)))  # Set window icon
 
@@ -69,6 +70,7 @@ class CounterApp(QMainWindow):
         self.app.aboutToQuit.connect(self.on_exit)
 
         self.tray_icon.showMessage("PyCounter", "Timer Loaded!", QSystemTrayIcon.Information, 5000)
+
 
     def _init_ui(self):
         """
