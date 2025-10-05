@@ -21,6 +21,7 @@ class ActivityManager(QObject):
     timer: QTimer
     start_time: datetime = datetime.now()
     total_elapsed: timedelta = timedelta(seconds=0)
+    last_update: datetime = datetime.now()
     running: bool = False
 
     # Signal emitted on every timer tick to update elapsed time
@@ -46,22 +47,27 @@ class ActivityManager(QObject):
         # Initialize elapsed time tracking
         self.total_elapsed = timedelta(seconds=0)
         self.start_time = datetime.now()
+        self.last_update = datetime.now()
 
         # Initialize and configure the timer
         self.timer = QTimer(parent)
-        self.timer.setInterval(1000)  # 1000 ms = 1 second
+        self.timer.setInterval(1_000)  # 1000 ms = 1 second
         self.timer.timeout.connect(self.tick.emit)  # Emit signal every time the timer times out
         self.tick.connect(self.update_time)  # Connect the tick signal to the update_time method
 
         self.running = False
 
-    def update_time(self):
+    def update_time(self, delta: timedelta | None = None):
         """
         Update the total elapsed time by calculating the difference
         between the current time and the start time.
         """
-        now = datetime.now()
-        self.total_elapsed = now - self.start_time
+        if not delta:
+            new_time = self.total_elapsed + (datetime.now() - self.last_update)
+        else:
+            new_time = self.total_elapsed + delta 
+        self.total_elapsed = new_time
+        self.last_update = datetime.now()
     
     def start_timer(self):
         """
@@ -70,7 +76,7 @@ class ActivityManager(QObject):
         """
         if not self.running:
             self.start_time = datetime.now() - self.total_elapsed  # Adjust the start time based on any previous elapsed time
-            self.timer.start(1000)  # Start the timer with 1-second interval
+            self.timer.start(1_000)  # Start the timer with 1-second interval
             self.running = True
     
     def toggle_play_pause(self):
@@ -84,7 +90,7 @@ class ActivityManager(QObject):
             # Pause the timer
             self.timer.stop()
             self.total_elapsed = datetime.now() - self.start_time  # Store the elapsed time at pause
-            self.start_time = None
+            self.start_time = None # type: ignore
             self.running = not self.running
         else:
             # Resume the timer
@@ -97,7 +103,7 @@ class ActivityManager(QObject):
         Stops the timer, resets the elapsed time, and clears all alert flags.
         """
         self.timer.stop()
-        self.start_time = None
+        self.start_time = None # type: ignore
         self.total_elapsed = timedelta()
 
         self.running = False

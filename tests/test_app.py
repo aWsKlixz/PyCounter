@@ -9,7 +9,7 @@ class TestPyCounter(unittest.TestCase):
     def test_yaml_config_loader(self):
         from pycounter.config import AppConfig
         config_path = Path("pycounter/config.yaml")
-        config = yaml_config_loader(config_path)
+        config = yaml_config_loader(str(config_path))
 
         self.assertIsInstance(config, AppConfig)
        

@@ -43,7 +43,7 @@ class AssetConfig(BaseSettings):
         """
         if getattr(sys, 'frozen', False):
             # If the application is bundled (e.g., using PyInstaller)
-            r = Path(sys._MEIPASS).joinpath(self.root)
+            r = Path(sys._MEIPASS).joinpath(self.root) # type: ignore
         else:
             # If the application is running in a normal Python environment
             r = Path(self.root)
@@ -98,7 +98,7 @@ class Data(BaseSettings):
     def Database(self, val: str):
         self.database = val
 
-    collection: Optional[str] = 'herecomestheuser'  # Default collection/table name
+    collection: str = 'herecomestheuser'  # Default collection/table name
     defaultorder: str = "1234"  # Default order ID (useful for debugging or pre-loads)
 
 

@@ -15,16 +15,16 @@ class RegexFilterProxyModel(QSortFilterProxyModel):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.setFilterCaseSensitivity(Qt.CaseInsensitive) # type: ignore
 
     def filterAcceptsRow(self, source_row, source_parent):
         """
         Override to filter rows based on a regex match on the data in the first column.
         """
-        index = self.sourceModel().index(source_row, 0, source_parent)
-        data = self.sourceModel().data(index, Qt.DisplayRole)
+        index = self.sourceModel().index(source_row, 0, source_parent) # type: ignore
+        data = self.sourceModel().data(index, Qt.DisplayRole) # type: ignore
         pattern = self.filterRegExp().pattern()
-        return QRegExp(pattern, Qt.CaseInsensitive).indexIn(data) != -1
+        return QRegExp(pattern, Qt.CaseInsensitive).indexIn(data) != -1 # type: ignore
 
 
 class RegexCompleter(QCompleter):
@@ -33,23 +33,23 @@ class RegexCompleter(QCompleter):
     """
     def __init__(self, items, parent=None):
         # Create string model from provided items
-        self.model = QStringListModel(items)
+        self.model = QStringListModel(items) # type: ignore
 
         # Use custom proxy model for regex-based filtering
         self.proxy_model = RegexFilterProxyModel()
-        self.proxy_model.setSourceModel(self.model)
+        self.proxy_model.setSourceModel(self.model) # type: ignore
 
         # Initialize the QCompleter with the proxy model
         super().__init__(self.proxy_model, parent)
-        self.setCompletionMode(QCompleter.PopupCompletion)
-        self.setCaseSensitivity(Qt.CaseInsensitive)
-        self.setFilterMode(Qt.MatchContains)
+        self.setCompletionMode(QCompleter.PopupCompletion) # type: ignore
+        self.setCaseSensitivity(Qt.CaseInsensitive) # type: ignore
+        self.setFilterMode(Qt.MatchContains) # type: ignore
 
     def updateModelFilter(self, text):
         """
         Update the regex pattern for filtering based on user input.
         """
-        regex = QRegExp(text, Qt.CaseInsensitive)
+        regex = QRegExp(text, Qt.CaseInsensitive) # type: ignore
         self.proxy_model.setFilterRegExp(regex)
 
 
@@ -61,9 +61,9 @@ class FocusLineEdit(QLineEdit):
         super().__init__(*args, **kwargs)
         self.completer_ = RegexCompleter(suggestions, self)
         self.setCompleter(self.completer_)
-        self.textEdited.connect(self.completer_.updateModelFilter)
+        self.textEdited.connect(self.completer_.updateModelFilter) # type: ignore
 
-    def focusInEvent(self, event):
+    def focusInEvent(self, event): # type: ignore
         """
         Ensure the completer updates on focus-in event.
         """

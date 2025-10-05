@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import date, timedelta
 from pycounter.config import yaml_config_loader
 
-def generate_fake_db(num_records=10, num_orders=5):
+def generate_fake_db(num_records: int = 10, num_orders: int = 5):
     app_config = yaml_config_loader('pycounter/config.yaml')
     data = {}
     data[app_config.mind.collection] = {}
@@ -16,20 +16,29 @@ def generate_fake_db(num_records=10, num_orders=5):
         random_order_indices = [random.randint(0, num_orders - 1) for _ in range(num_day_orders)]
 
         day_orders = [random_orders[oid] for oid in random_order_indices]
-        day_orders.insert(0, app_config.mind.defaultorder)
-
 
         day_elapsed = timedelta(hours=random.uniform(6, 10)).total_seconds()
 
-        orders_elapsed = [random.random() for _ in range(num_day_orders)]
-        total_sum = sum(orders_elapsed)
-        normalized = [(e / total_sum) * day_elapsed for e in orders_elapsed]
+        # Generate random shares that sum to 1
+        random_shares = [random.random() for _ in range(num_day_orders)]
+        total_share = sum(random_shares)
+
+        normalized = []
+        cumulative = 0.0
+        for idx, share in enumerate(random_shares):
+            if idx == num_day_orders - 1:
+                # last order gets the remainder to make it exact
+                value = day_elapsed - cumulative
+            else:
+                value = (share / total_share) * day_elapsed
+                cumulative += value
+            normalized.append(value)
 
         orders_data = dict(zip(day_orders, normalized))
 
         current_day = ref_day + timedelta(days=i)
 
-        day_record = {
+        day_record: dict[str, float | str | dict[str, float] ] = {
             "day": date.strftime(current_day, '%Y%m%d'),
             "elapsed": day_elapsed,
             "orders": orders_data
@@ -44,4 +53,4 @@ def generate_fake_db(num_records=10, num_orders=5):
     )
 
 if __name__ == '__main__':
-    generate_fake_db(num_records=20, num_orders=5)
+    generate_fake_db(num_records=200, num_orders=20)

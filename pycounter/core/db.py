@@ -103,7 +103,7 @@ class Mind:
         if day_activity:
             # Update the elapsed time in the current day's record
             self.collection.update(
-                lambda a: a.update({'elapsed': transformed_elapsed}),
+                lambda a: a.update({'elapsed': transformed_elapsed}), # type: ignore
                 self.day_activity.day == self.day_id
             )
         else:
@@ -157,9 +157,10 @@ class Mind:
                     rows.update(orders.keys())
 
         rows = list(rows)
+        rows.append(self.config.mind.defaultorder)
         rows.append('total elapsed')
         columns = list(columns)
-
+        
         data = np.zeros((len(rows), len(columns)))
 
         # Populate the matrix with hours or percentages
@@ -168,7 +169,7 @@ class Mind:
              if day_id:
                  col_idx = columns.index(day_id)
  
-                 total_elapsed = document.get('elapsed', 0.0) / (60 * 60)# convert to hours
+                 total_elapsed = document.get('elapsed', 0.0) / (60 * 60)       # convert to hours
  
                  data[-1, col_idx] = round(total_elapsed, 1)
  
@@ -176,18 +177,27 @@ class Mind:
                  if isinstance(orders, dict):
                      for order, order_elapsed in orders.items():
                          row_idx = rows.index(order)
-                         formatted_order_elapsed = order_elapsed / (60 * 60)
+                         formatted_order_elapsed = order_elapsed / (60 * 60)    # convert to hours
                          if format == 'perc':
                              formatted_order_elapsed = (formatted_order_elapsed / total_elapsed) * 1e2 
+
                          data[row_idx, col_idx] = round(formatted_order_elapsed, 1)
- 
+
+        # fill by default order
+        data[-2, :] = np.round(data[-1, :] - np.sum(data[:-2], axis=0),1) if format == 'hours' else np.round(100 - np.sum(data[:-2], axis=0), 1)
+        # build the colum with total worked per order
+        # data[:, -1] = np.sum(data, axis=1)
+
         # format columns for printing
-        formatted_columns = [datetime.strptime(col, self.day_format).strftime('%d-%m-%Y') for col in columns]
+        formatted_columns = [
+            datetime.strptime(col, self.day_format).strftime('%d-%m-%Y')
+            for col in columns
+        ]
          
         data = pd.DataFrame(
              data=data, columns=formatted_columns, index=rows
         )
- 
+          
         return data
     
     def report(

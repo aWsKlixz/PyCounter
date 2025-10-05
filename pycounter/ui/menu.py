@@ -61,7 +61,7 @@ class AppMenu(QMenu):
         Generates a report covering the entire activity duration.
         """
         self.parent_base_widget.mind.report(
-            format='hours',
+            format='perc',
             interval='total',
             open_report=True
         )
@@ -72,7 +72,7 @@ class AppMenu(QMenu):
         Generates a report for the current or previous month.
         """
         self.parent_base_widget.mind.report(
-            format='hours',
+            format='perc',
             interval='month',
             open_report=True
         )
@@ -81,5 +81,4 @@ class AppMenu(QMenu):
         """
         Callback for the 'Exit' action. Closes the entire application.
         """
-        QApplication.instance().quit()
- 
+        QApplication.instance().quit() # type: ignore

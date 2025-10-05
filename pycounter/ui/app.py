@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QMainWindow,
     QVBoxLayout, QSystemTrayIcon
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QScreen
 
 from config import AppConfig
 
@@ -35,8 +35,8 @@ class CounterApp(QMainWindow):
 
 
     @property
-    def base_widget_arguments(self):
-        return [self.config, self.mind, self.activity_manager]
+    def base_widget_arguments(self) -> tuple[AppConfig, Mind, ActivityManager]:
+        return (self.config, self.mind, self.activity_manager)
 
     def __init__(self, config: AppConfig = AppConfig()):
         """
@@ -67,9 +67,12 @@ class CounterApp(QMainWindow):
 
         # Ensure app state is saved before quitting
         self.app = QApplication.instance()
+        if not self.app:
+            raise ValueError("self.app is None")
+        
         self.app.aboutToQuit.connect(self.on_exit)
 
-        self.tray_icon.showMessage("PyCounter", "Timer Loaded!", QSystemTrayIcon.Information, 5000)
+        self.tray_icon.showMessage("PyCounter", "Timer Loaded!", QSystemTrayIcon.Information, 5000) # type: ignore
 
 
     def _init_ui(self):
@@ -112,6 +115,8 @@ class CounterApp(QMainWindow):
             h (int): Height of the window.
         """
         screen = QApplication.primaryScreen()
+        if not isinstance(screen, QScreen):
+            raise ValueError("Failed to get primary screen.")
         screen_geometry = screen.availableGeometry()
         x = screen_geometry.width() - w
         y = screen_geometry.height() - h
@@ -123,5 +128,4 @@ class CounterApp(QMainWindow):
 
         Ensures that the timer is paused and tracked time is pushed to storage.
         """
-        self.timer_panel.btn_reset.click()      # Ensure timer is paused/stopped
         self.tracker_panel.btn_activity_handler.click()     # Manually trigger push action
