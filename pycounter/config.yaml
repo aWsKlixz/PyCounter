@@ -1,4 +1,4 @@
-debug: true
+debug: false
 window:
   width: 450
   height: 200
@@ -22,7 +22,7 @@ assets:
   stylesheet: style.qss
 
 mind:
-  database: 'test'
-  collection: 'herecomestheuser'
-  defaultorder: "1234"
+  database: 'pycounter'
+  collection: 'uuha9686'
+  defaultorder: "340811"
 

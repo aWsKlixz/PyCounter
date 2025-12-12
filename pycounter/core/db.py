@@ -167,21 +167,25 @@ class Mind:
         for document in self.collection.all():
              day_id = document.get('day', None)
              if day_id:
-                 col_idx = columns.index(day_id)
+                col_idx = columns.index(day_id)
  
-                 total_elapsed = document.get('elapsed', 0.0) / (60 * 60)       # convert to hours
- 
-                 data[-1, col_idx] = round(total_elapsed, 1)
- 
-                 orders = document.get('orders', {})
-                 if isinstance(orders, dict):
-                     for order, order_elapsed in orders.items():
-                         row_idx = rows.index(order)
-                         formatted_order_elapsed = order_elapsed / (60 * 60)    # convert to hours
-                         if format == 'perc':
-                             formatted_order_elapsed = (formatted_order_elapsed / total_elapsed) * 1e2 
+                total_elapsed = document.get('elapsed', 0.0) / (60 * 60)       # convert to hours
+                
+               
 
-                         data[row_idx, col_idx] = round(formatted_order_elapsed, 1)
+                orders = document.get('orders', {})
+                if isinstance(orders, dict):
+                    if np.isclose(total_elapsed, 0.0):
+                        total_elapsed = np.sum(list(orders.values()))
+                    for order, order_elapsed in orders.items():
+                        row_idx = rows.index(order)
+                        formatted_order_elapsed = order_elapsed / (60 * 60)    # convert to hours
+                        if format == 'perc':
+          
+                            data[-1, col_idx] = round(total_elapsed, 1)
+                            formatted_order_elapsed = (formatted_order_elapsed / total_elapsed) * 1e2 
+
+                        data[row_idx, col_idx] = round(formatted_order_elapsed, 1)
 
         # fill by default order
         data[-2, :] = np.round(data[-1, :] - np.sum(data[:-2], axis=0),1) if format == 'hours' else np.round(100 - np.sum(data[:-2], axis=0), 1)
