@@ -23,6 +23,6 @@ assets:
 
 mind:
   database: 'pycounter'
-  collection: 'uuha9686'
-  defaultorder: "3400811"
+  collection: 'user'
+  defaultorder: "000000"
 
