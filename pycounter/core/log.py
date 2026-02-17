@@ -37,7 +37,7 @@ def setup_logging(
         filehandler = RotatingFileHandler(
             str(logfile), 
             mode='a', 
-            encoding='latin-1',
+            encoding='utf-8',
             maxBytes=max_bytes,
             backupCount=backup_count
         )

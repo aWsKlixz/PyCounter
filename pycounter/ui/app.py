@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QMainWindow,
-    QVBoxLayout, QSystemTrayIcon
+    QVBoxLayout, QSystemTrayIcon, QAction
 )
 from PyQt5.QtGui import QIcon, QScreen
 
@@ -12,6 +12,7 @@ from core.activitymanager import ActivityManager
 from ui.timerpanel import TimerPanel
 from ui.activities import ActivityPanel
 from ui.tray import TrayCounter
+from ui.menu import AppMenu
 
 class CounterApp(QMainWindow):
     """
@@ -72,8 +73,7 @@ class CounterApp(QMainWindow):
         
         self.app.aboutToQuit.connect(self.on_exit)
 
-        self.tray_icon.showMessage("PyCounter", "Timer Loaded!", QSystemTrayIcon.Information, 5000) # type: ignore
-
+        self.tray_icon.showMessage("PyCounter", "Timer Loaded!", QSystemTrayIcon.Information, 3000)
 
     def _init_ui(self):
         """
@@ -105,6 +105,50 @@ class CounterApp(QMainWindow):
 
         self.central_widget.setLayout(central_layout)
         self.setCentralWidget(self.central_widget)
+
+        # add a menu bar
+        menubar = self.menuBar()
+        quit_action = QAction('Exit!', self)
+        quit_action.triggered.connect(lambda c: QApplication.instance().quit())
+
+        app_menu = menubar.addMenu("App")
+        app_menu.addAction(quit_action)
+
+        def on_report_click(format, interval):
+            def wrapper():
+                self.mind.report(
+                    format=format,
+                    interval=interval,
+                    open_report=True
+                )
+            return wrapper
+
+        report_menu = menubar.addMenu("Reports")
+
+
+        monthly_report_menu = report_menu.addMenu("Monthly Reports")
+        
+        monthly_perc_action = QAction("Create Monthy %-Report", monthly_report_menu)
+        monthly_perc_action.triggered.connect(on_report_click(format='perc', interval='month'))
+
+        monthly_total_action = QAction("Create Monthly Absolute Report", monthly_report_menu)
+        monthly_total_action.triggered.connect(on_report_click(format='hours', interval='month'))
+
+        monthly_report_menu.addAction(monthly_perc_action)
+        monthly_report_menu.addAction(monthly_total_action)
+
+        total_report_menu = report_menu.addMenu("Total Reports")
+
+        total_perc_action = QAction("Create Total %-Report", total_report_menu)
+        total_perc_action.triggered.connect(on_report_click(format='perc', interval='total'))
+
+        total_total_action = QAction("Create Total Absolute Report", total_report_menu)
+        total_total_action.triggered.connect(on_report_click(format='hours', interval='total'))
+
+        total_report_menu.addAction(total_perc_action)
+        total_report_menu.addAction(total_total_action)
+        
+        
 
     def _move_window_to_bottom_right(self, w: int, h: int):
         """

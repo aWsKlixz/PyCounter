@@ -1,5 +1,7 @@
 # **PyCounter - Keep an Eye on Your Time, Boost Your Productivity!**
 
+(made with help of AI)
+
 **PyCounter** is your go-to Python-based time and activity tracker designed to help you stay on top of your workday. Whether you’re working on a project, managing tasks, or simply want to keep track of your hours, PyCounter makes it easy and efficient.
 
 With its simple interface and essential features, PyCounter is the perfect tool for freelancers, professionals, and anyone looking to optimize their time management. Keep track of your progress, set custom alerts, and gain insights into your productivity — all while enjoying a smooth and seamless experience.
